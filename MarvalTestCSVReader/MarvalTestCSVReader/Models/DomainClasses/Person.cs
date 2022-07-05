@@ -12,7 +12,7 @@ namespace MarvalTestCSVReader.Models.DomainClasses
         public string Surname { get; set; }
         public int Age { get; set; }
         public string Sex { get; set; }
-        public int Mobile { get; set; }
+        public decimal Mobile { get; set; }
         public bool Active { get; set; }
     }
 }

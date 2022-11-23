@@ -12,8 +12,8 @@ namespace MarvalTestCSVReader.Models
             ValidRows = new List<T>();
             Failures = new List<T>();
         }
-        public List<T> ValidRows { get; set; }
+        public IList<T> ValidRows { get; set; }
 
-        public List<T> Failures { get; set; }
+        public IList<T> Failures { get; set; }
     }
 }

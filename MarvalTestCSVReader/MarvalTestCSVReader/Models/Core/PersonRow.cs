@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MarvalTestCSVReader.Models.DomainClasses;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -54,14 +55,15 @@ namespace MarvalTestCSVReader.Models.Core
             if (_config.IsSexRequired && string.IsNullOrWhiteSpace(sexSupplied))
                 errors.Add($"{nameof(Sex)} not specified");
 
-            if (string.IsNullOrWhiteSpace(sexSupplied))
+            if (!string.IsNullOrWhiteSpace(sexSupplied))
             {
-                var c = sexSupplied[0].ToString();
-
-                if (sexSupplied.Length > 1
-                    && !(c.Equals("m", StringComparison.InvariantCultureIgnoreCase)
-                    || c.Equals("f", StringComparison.InvariantCultureIgnoreCase)))
-                    errors.Add($"{nameof(Sex)} must be either 'M' or 'F'. Provided sex: {sexSupplied} is invalid");
+                if ( !(sexSupplied.Equals("m", StringComparison.InvariantCultureIgnoreCase)
+                    || sexSupplied.Equals("f", StringComparison.InvariantCultureIgnoreCase)
+                    || sexSupplied.Equals("female", StringComparison.InvariantCultureIgnoreCase)
+                    || sexSupplied.Equals("male", StringComparison.InvariantCultureIgnoreCase)))
+                {
+                    errors.Add($"{nameof(Sex)} must be either 'Male', 'Female', 'M' or 'F'. Provided sex: {sexSupplied} is invalid");
+                }
 
                 Sex = sexSupplied;
             }
@@ -77,7 +79,7 @@ namespace MarvalTestCSVReader.Models.Core
                 {
                     errors.Add($"{nameof(Mobile)} must be number. Provided mobile number: {providedMobile} is invalid");
                 }
-                Mobile = _mobile;
+                Mobile = providedMobile;
             }
 
             var suppliedActive = GetColumnValue(columns, INDEX_OF_ACTIVE, "");
@@ -89,20 +91,33 @@ namespace MarvalTestCSVReader.Models.Core
             {
                 if (!bool.TryParse(suppliedActive, out bool active))
                 {
-                    errors.Add($"{nameof(Active)} must be number. Provided sex: {suppliedActive} is invalid");
+                    errors.Add($"{nameof(Active)} must be either 'TRUE' or 'FALSE'.");
                 }
-                Active = active;
+                Active = suppliedActive;
             }
 
-            if (string.IsNullOrWhiteSpace(Identity))
-                errors.Add($"{nameof(Identity)} not specified");
             if (string.IsNullOrWhiteSpace(FirstName))
                 errors.Add($"{nameof(FirstName)} not specified");
+            if (FirstName.Count() < 2)
+                errors.Add($"{nameof(FirstName)} not valid");
             if (string.IsNullOrWhiteSpace(Surname))
                 errors.Add($"{nameof(Surname)} not specified");
+            if (Surname.Count() < 2)
+                errors.Add($"{nameof(Surname)} not valid");
 
             IsValid = errors.Count == 0;
             if (!IsValid) ErrorMessages = errors;
+            Person = new Person
+            {
+                Identity = int.Parse(Identity),
+                Active = Active ?? "",
+                Age = Age ?? "",
+                FirstName = FirstName ?? "",
+                Surname = Surname ?? "",
+                IsValid = IsValid.ToString() ?? "",
+                Mobile = Mobile ?? "",
+                Sex = Sex ?? "",
+            };
         }
 
         public string Identity { get; set; }
@@ -110,8 +125,10 @@ namespace MarvalTestCSVReader.Models.Core
         public string Surname { get; set; }
         public string Age { get; set; }
         public string Sex { get; set; }
-        public decimal Mobile { get; set; }
-        public bool Active { get; set; }
+        public string Mobile { get; set; }
+        public string Active { get; set; }
+
+        public Person Person { get; set; }
 
     }
 

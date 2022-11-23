@@ -11,6 +11,10 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using MarvalTestCSVReader.Data;
+using MarvalTestCSVReader.Helpers;
+using MarvalTestCSVReader.Models.Core;
+using MarvalTestCSVReader.Models;
+using Microsoft.OpenApi.Models;
 
 namespace MarvalTestCSVReader
 {
@@ -29,17 +33,42 @@ namespace MarvalTestCSVReader
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
           
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseInMemoryDatabase(connectionString));
+                options.UseSqlServer(connectionString));
 
             EnsureDatabaseExists(connectionString);
 
-            services.AddControllersWithViews();
+            services.AddMvc(options =>
+            {
+                options.EnableEndpointRouting = false;
+            });
+            //services.AddSwaggerGen(c =>
+            //{
+            //    c.SwaggerDoc("v1", new OpenApiInfo
+            //    {
+            //        Title = "Marvel API",
+            //        Version = "v1",
+            //        Description = "Description for the API goes here.",
+            //        Contact = new OpenApiContact
+            //        {
+            //            Name = "Akinkunmi Okunola",
+            //            Email = string.Empty,
+            //            Url = new Uri("https://coderjony.com/"),
+            //        },
+            //    });
+            //});
+            services.AddTransient<IFileReader, CsvFileReader>();
+            services.AddSingleton<PersonRow>();
+            services.AddTransient<IFileContentValidator<PersonRow, PersonContext>, FileContentValidator>();
+
+            services.AddCors();
+            services.AddRazorPages();
+            services.AddControllers(); 
         }
 
         private void EnsureDatabaseExists(string connection)
         {
             var builder = new DbContextOptionsBuilder<ApplicationDbContext>();
-            builder.UseInMemoryDatabase(connection);
+            builder.UseSqlServer(connection);
 
             using var context = new ApplicationDbContext(builder.Options);
             context.Database.EnsureCreated();
@@ -58,9 +87,19 @@ namespace MarvalTestCSVReader
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            //app.UseSwagger();
+
+            //app.UseSwaggerUI(c =>
+            //{
+            //    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Marvel API V1");
+
+            //    c.RoutePrefix = string.Empty;
+            //});
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseMvcWithDefaultRoute();
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
@@ -68,13 +107,13 @@ namespace MarvalTestCSVReader
               .AllowAnyOrigin()
               .AllowAnyHeader()
               .AllowAnyMethod()
-
               );
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-                endpoints.MapRazorPages();
-            });
+
+            //app.UseEndpoints(endpoints =>
+            //{
+            //    endpoints.MapControllers();
+            //    endpoints.MapRazorPages();
+            //});
         }
     }
 }

@@ -2,7 +2,94 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+
+<link href="~/DataTables-1.11.3/css/dataTables.bootstrap4.min.css" rel="stylesheet" />
+<link href="~/lib/sweetalert2/dist/sweetalert2.min.css" rel="stylesheet" />
+<h1 class="display-4">Persons File Upload</h1>
+
+<p class="lead">Here you see a table with all records of people in the uploaded file.</p>
+
+<hr />
+
+<form >
+    <div class="form-group">
+        <label class="file">
+            <input type="file" id="fileUpload" aria-label="Csv File Upload">
+            <span class="file-custom"></span>
+        </label>
+            <button class="btn btn-primary" id="uploadFile">Submit</button>
+    </div>   
+
+   
+    @*@{
+        if (ViewData["SuccessMessage"] != null)
+        {
+
+
+    <input type="file" id="UploadImg" /> <br /><br />
+    New File Name: <input type="text" id="txtImg" size="50" /> <br /><br />
+    <img id="imgPreview" height="200" width="200"/>
+
+    <script>
+    $("#UploadImg").change(function () {
+    var data = new FormData();
+    var files = $("#UploadImg").get(0).files;
+    if (files.length > 0) {
+    data.append("MyImages", files[0]);
+    }
+
+    $.ajax({
+    url: "/UploadImage/UploadFile",
+    type: "POST",
+    processData: false,
+    contentType: false,
+    data: data,
+    success: function (response) {
+    //code after success
+    $("#txtImg").val(response);
+    $("#imgPreview").attr('src', '/Upload/' + response);
+    },
+    error: function (er) {
+    alert(er);
+    }
+
+    });
+
+
+          <span class="badge badge-success"> @ViewData["SuccessMessage"]</span>        }
+    }*@
+</form>
+
+<br />
+<br />
+<br />
+<wbr /><abbr></abbr>
+<table id="personsDatatable" class="table table-striped table-bordered dt-responsive table-hover nowrap">
+    <thead class="thead-light">
+        <tr>
+            <th>Id</th>
+            <th>FName</th>
+            <th>SName</th>
+            <th>Age</th>
+            <th>Sex</th>
+            <th>Mobile</th>
+            <th>Active</th>
+            <th>Valid</th>
+            <th>Edit</th>
+            <th>Del</th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+@section Scripts
+    {
+    <script src="~/DataTables-1.11.3/js/jquery.dataTables.min.js"></script>
+    <script src="~/DataTables-1.11.3/js/dataTables.bootstrap4.min.js"></script>
+
+    <script src="~/lib/sweetalert2/dist/sweetalert2.all.min.js"></script>
+    <script src="~/lib/sweetalert/sweetalert.min.js"></script>
+
+    <script src="~/js/bookDatatable.js"></script>
+}

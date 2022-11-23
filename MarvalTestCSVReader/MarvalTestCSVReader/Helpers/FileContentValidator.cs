@@ -9,9 +9,12 @@ namespace MarvalTestCSVReader.Helpers
 {
     public class FileContentValidator : IFileContentValidator<PersonRow, PersonContext>
     {
-        public async Task<IList<PersonRow>> Validate(IEnumerable<Row> rows, PersonContext context)
+        public async Task<IList<PersonRow>> Validate(IEnumerable<Row> rows, PersonContext context, bool hasHeader)
         {
             await Task.CompletedTask;
+
+            if (hasHeader)
+                rows = rows.Skip(1);
 
             var processedRows = new List<PersonRow>();
             var validationConfig = context.Configuration ?? new PersonRowConfig();
